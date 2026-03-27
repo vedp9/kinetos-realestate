@@ -36,6 +36,8 @@ export default function RegisterPage() {
     if (error) {
       setStatus('❌ Error: ' + error.message)
     } else {
+      localStorage.setItem('kinetos_agent_name', form.name)
+      localStorage.setItem('kinetos_agent_slug', form.slug)
       setStatus('✅ Registered! Your link is: /agent/' + form.slug)
     }
     setLoading(false)
