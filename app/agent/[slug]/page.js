@@ -6,6 +6,23 @@ import { supabase } from '../../../lib/supabase'
 const BHK_FILTERS = ['All', '1', '2', '3', '4', '5']
 const STATUS_FILTERS = ['All', 'Ready to move', 'Under construction', 'Resale']
 
+function agentBtnStyle(bg, color) {
+  return {
+    background: bg,
+    color: color,
+    border: '1px solid #253248',
+    borderRadius: '8px',
+    padding: '6px 12px',
+    fontSize: '11px',
+    fontFamily: 'Syne, sans-serif',
+    fontWeight: '700',
+    textDecoration: 'none',
+    cursor: 'pointer',
+    whiteSpace: 'nowrap',
+    WebkitTapHighlightColor: 'transparent',
+  }
+}
+
 export default function AgentPortfolio() {
   const { slug } = useParams()
   const [agent, setAgent] = useState(null)
@@ -17,6 +34,28 @@ export default function AgentPortfolio() {
   const [bhkFilter, setBhkFilter] = useState('All')
   const [statusFilter, setStatusFilter] = useState('All')
   const [search, setSearch] = useState('')
+
+  const [isAgent, setIsAgent] = useState(false)
+  const [agentChecked, setAgentChecked] = useState(false)
+
+  useEffect(() => {
+    // ask once if this visitor is the agent
+    const saved = sessionStorage.getItem('agent_slug')
+    if (saved === slug) {
+      setIsAgent(true)
+    }
+    setAgentChecked(true)
+  }, [slug])
+
+  function handleAgentCheck() {
+    const input = prompt('Enter your agent slug to access agent options:')
+    if (input && input.toLowerCase().trim() === slug) {
+      sessionStorage.setItem('agent_slug', slug)
+      setIsAgent(true)
+    } else if (input !== null) {
+      alert('❌ Slug does not match this portfolio.')
+    }
+  }
 
   // fetch agent + properties
   useEffect(() => {
@@ -402,7 +441,61 @@ export default function AgentPortfolio() {
       `}</style>
 
       <div className="page">
-
+        {/* Agent bar — only visible to agent */}
+        {agentChecked && (
+          <div style={{
+            background: '#0a0f1a',
+            borderBottom: '1px solid #1c2538',
+            padding: '10px 16px',
+            position: 'sticky',
+            top: 0,
+            zIndex: 20,
+          }}>
+            <div style={{
+              maxWidth: '640px',
+              margin: '0 auto',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '10px',
+            }}>
+              {isAgent ? (
+                <>
+                  <span style={{ fontSize: '11px', color: '#3b82f6', letterSpacing: '1px', textTransform: 'uppercase' }}>
+                    Agent View
+                  </span>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <a href="/dashboard" style={agentBtnStyle('#1c2538', '#6b7fa0')}>
+                      Dashboard
+                    </a>
+                    <a href="/upload" style={agentBtnStyle('#1c2538', '#6b7fa0')}>
+                      + Add Property
+                    </a>
+                    <a href="/register" style={agentBtnStyle('#1c2538', '#6b7fa0')}>
+                      Edit Profile
+                    </a>
+                  </div>
+                </>
+              ) : (
+                <button
+                  onClick={handleAgentCheck}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    fontSize: '11px',
+                    color: '#3d4e68',
+                    cursor: 'pointer',
+                    fontFamily: 'JetBrains Mono, monospace',
+                    padding: '4px 0',
+                    letterSpacing: '0.5px',
+                  }}
+                >
+                  Are you the agent? →
+                </button>
+              )}
+            </div>
+          </div>
+        )}
         {/* Sticky header */}
         <div className="header">
           <div className="header-inner">
