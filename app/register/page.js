@@ -353,13 +353,13 @@ export default function RegisterPage() {
               inputMode="numeric"
             />
 
-            <label className="label">Your Unique Link</label>
+            <label className="label">Your Username</label>
             <div className="slug-wrap">
               <span className="slug-prefix">kinetos.in/agent/</span>
               <input
                 className="slug-input"
                 name="slug"
-                placeholder="ravi"
+                placeholder="e.g. ravi, priya, srikanth"
                 value={form.slug}
                 onChange={handleChange}
                 required

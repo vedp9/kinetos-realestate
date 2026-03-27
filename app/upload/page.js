@@ -384,11 +384,11 @@ export default function UploadPage() {
             {/* Card 1 — Agent */}
             <div className="card">
               <div className="card-title">Your Agent Slug</div>
-              <label className="label">Your slug (from registration)</label>
+              <label className="label">Your Username (same one you used to register)</label>
               <input
                 className="input"
                 name="agent_slug"
-                placeholder="ravi"
+                placeholder="e.g. ravi, priya, srikanth"
                 value={form.agent_slug}
                 onChange={handleChange}
                 required
@@ -499,9 +499,34 @@ export default function UploadPage() {
 
           <p className="add-more">
             Want to view all listings?{' '}
-            <a href={form.agent_slug ? `/agent/${form.agent_slug}` : '#'}>
+            <button
+              type="button"
+              onClick={() => {
+                if (!form.agent_slug.trim()) {
+                  alert('Please enter your username first so we know which portfolio to open.')
+                  return
+                }
+                const choice = window.confirm(
+                  'What would you like to do?\n\nClick OK → Go to your Portfolio\nClick Cancel → Stay here and add more properties'
+                )
+                if (choice) {
+                  window.open(`/agent/${form.agent_slug}`, '_blank')
+                }
+              }}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: '#3b82f6',
+                fontSize: '12px',
+                fontFamily: 'JetBrains Mono, monospace',
+                cursor: 'pointer',
+                padding: 0,
+                textDecoration: 'underline',
+                WebkitTapHighlightColor: 'transparent',
+              }}
+            >
               Visit your portfolio →
-            </a>
+            </button>
           </p>
 
         </div>

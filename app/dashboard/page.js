@@ -149,12 +149,12 @@ export default function Dashboard() {
         <div className="card">
           <div className="icon">📊</div>
           <h1 className="title">Agent <em>Dashboard</em></h1>
-          <p className="sub">Enter your slug to access your dashboard.</p>
+          <p className="sub">Enter your username to access your dashboard.</p>
           <form onSubmit={handleLogin}>
-            <label className="label">Your Slug</label>
+            <label className="label">Your Username</label>
             <input
               className="input"
-              placeholder="ravi"
+              placeholder="Enter your username"
               value={slug}
               onChange={e => setSlug(e.target.value)}
               required
