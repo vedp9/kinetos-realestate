@@ -1,3 +1,4 @@
+import { SpeedInsights } from "@vercel/speed-insights/next"
 export default function Home() {
   return (
     <main style={{ padding: '40px', fontFamily: 'sans-serif', background: '#06080f', minHeight: '100vh' }}>
