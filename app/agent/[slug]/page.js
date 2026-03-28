@@ -433,6 +433,7 @@ export default function AgentPortfolio() {
           color: #fff;
         }
 
+
         @media (max-width: 400px) {
           .prop-card { padding: 16px; }
           .prop-title { font-size: 14px; }
@@ -612,6 +613,18 @@ export default function AgentPortfolio() {
               className="contact-btn btn-whatsapp"
             >
               💬 WhatsApp
+            </a>
+            <a
+              href={`/chat/${agent.slug}`}
+              className="contact-btn"
+              style={{
+                flex: 1,
+                background: 'rgba(139,92,246,0.15)',
+                border: '1px solid rgba(139,92,246,0.3)',
+                color: '#a78bfa',
+              }}
+            >
+              🤖 Ask AI
             </a>
           </div>
         </div>

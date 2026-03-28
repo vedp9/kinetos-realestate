@@ -384,10 +384,36 @@ export default function Dashboard() {
 
           {/* Share box */}
           <div className="share-box">
-            <div className="share-link">
-              kinetos.in/agent/{agent.slug}
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: '10px', color: '#3d4e68', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '6px' }}>
+                Your Links
+              </div>
+              <div className="share-link">
+                📋 kinetos.in/agent/{agent.slug}
+              </div>
+              <div style={{ fontSize: '11px', color: '#8b5cf6', marginTop: '6px' }}>
+                🤖 kinetos.in/chat/{agent.slug}
+              </div>
             </div>
-            <button className="copy-btn" onClick={copyLink}>Copy Link</button>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <button
+                className="copy-btn"
+                onClick={copyLink}
+              >
+                Copy Portfolio
+              </button>
+              <button
+                className="copy-btn"
+                style={{ background: '#8b5cf6' }}
+                onClick={() => {
+                  const link = `${window.location.origin}/chat/${agent.slug}`
+                  navigator.clipboard.writeText(link)
+                  alert('✅ AI Chat link copied! Share it with clients.')
+                }}
+              >
+                Copy Chat
+              </button>
+            </div>
           </div>
 
           {/* Action buttons */}

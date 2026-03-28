@@ -551,9 +551,25 @@ export default function Home() {
                 <div className="returning-title">{t.returning_title}</div>
                 <div className="returning-sub">{t.returning_sub(agentSlug)}</div>
               </div>
-              <a href={`/agent/${agentSlug}`} className="returning-btn">
-                {t.returning_btn}
-              </a>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <a
+                  href={`/agent/${agentSlug}`}
+                  className="returning-btn"
+                >
+                  {t.returning_btn}
+                </a>
+                <a  
+                  href={`/chat/${agentSlug}`}
+                  className="returning-btn"
+                  style={{
+                    background: 'rgba(139,92,246,0.15)',
+                    border: '1px solid rgba(139,92,246,0.3)',
+                    color: '#a78bfa'
+                  }}
+                >
+                  {t.chat_btn}
+                </a>
+              </div>
             </div>
           )}
 
