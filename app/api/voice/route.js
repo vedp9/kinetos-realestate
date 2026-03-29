@@ -143,7 +143,7 @@ ${propertyContext}`
       await twilioClient.messages.create({
         from: 'whatsapp:' + process.env.TWILIO_WHATSAPP_NUMBER,
         to: 'whatsapp:+91' + agent.phone,
-        body: `🔔 New missed call handled!\n\nCaller: ${callerPhone}\nThey said: "${speechResult}"\n\nAI replied: ${aiReply}\n\nCall them back when free!`
+        body: `🔔 New enquiry received!\n\nCaller: ${callerPhone}\nWhatsApp them: https://wa.me/${callerPhone.replace('+', '')}\n\nThey said: "${speechResult}"\n\nAI replied with matching properties.\n\nCall or WhatsApp them back to close the deal! 💪`
       })
 
     } catch (waErr) {

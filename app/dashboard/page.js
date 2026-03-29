@@ -421,7 +421,15 @@ export default function Dashboard() {
             <a href="/upload" className="action-btn btn-blue">+ Add Property</a>
             <a href={`/agent/${agent.slug}`} className="action-btn btn-outline" target="_blank" rel="noreferrer">View Portfolio ↗</a>
           </div>
-
+          <a
+            href={`https://wa.me/${process.env.NEXT_PUBLIC_TWILIO_WHATSAPP_NUMBER?.replace('+', '')}?text=${encodeURIComponent(agent.slug + ': ')}`}
+            target="_blank"
+            rel="noreferrer"
+            className="action-btn btn-outline"
+            style={{ fontSize: '11px' }}
+          >
+            Share WhatsApp Link
+          </a>
           {/* Property list */}
           <div className="section-title">
             My Listings

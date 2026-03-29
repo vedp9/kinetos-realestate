@@ -12,37 +12,66 @@ const twilioClient = twilio(
   process.env.TWILIO_AUTH_TOKEN
 )
 
+// helper — send WhatsApp message and return empty TwiML
+// empty TwiML = no "OK" showing up in WhatsApp
+async function sendWhatsApp(to, body) {
+  await twilioClient.messages.create({
+    from: 'whatsapp:' + process.env.TWILIO_WHATSAPP_NUMBER,
+    to: to,
+    body: body,
+  })
+  // return empty TwiML — tells Twilio "got it, nothing to echo back"
+  return new Response(
+    '<?xml version="1.0" encoding="UTF-8"?><Response></Response>',
+    { headers: { 'Content-Type': 'text/xml' } }
+  )
+}
+
 export async function POST(req) {
   try {
     const formData = await req.formData()
-    const from = formData.get('From')       // client WhatsApp number
-    const body = formData.get('Body')       // message they sent
-    const to = formData.get('To')           // your Twilio WhatsApp number
+    const from = formData.get('From')   // client WhatsApp e.g. whatsapp:+919876543210
+    const body = (formData.get('Body') || '').trim()
 
-    // client must message in format: "ravi: I want 2BHK in Kondapur"
-    // OR we look up their number if they already messaged before
+    if (!body) {
+      return sendWhatsApp(from,
+        `Hi! Send us your property requirement and we will find the best match for you.\n\nExample: _2BHK in Kondapur under 50 lakhs_`
+      )
+    }
 
+    // ── check if message starts with a slug like "ravi: ..." ──
+    // this is used when agent shares their direct WhatsApp link
     let agentSlug = ''
     let clientMessage = body
 
-    // check if message starts with agent slug like "ravi: ..."
     if (body.includes(':')) {
-      const parts = body.split(':')
-      agentSlug = parts[0].trim().toLowerCase()
-      clientMessage = parts.slice(1).join(':').trim()
+      const firstColon = body.indexOf(':')
+      const possibleSlug = body.substring(0, firstColon).trim().toLowerCase()
+
+      // check if this is actually an agent slug (no spaces, short)
+      if (possibleSlug.length < 30 && !possibleSlug.includes(' ')) {
+        // verify it exists in DB
+        const { data: checkAgent } = await supabase
+          .from('agents')
+          .select('slug')
+          .eq('slug', possibleSlug)
+          .single()
+
+        if (checkAgent) {
+          agentSlug = possibleSlug
+          clientMessage = body.substring(firstColon + 1).trim()
+        }
+      }
     }
 
+    // if no slug found — ask which agent they want
     if (!agentSlug) {
-      // ask them to specify agent
-      await twilioClient.messages.create({
-        from: 'whatsapp:' + process.env.TWILIO_WHATSAPP_NUMBER,
-        to: from,
-        body: `Hi! To find properties, message us like this:\n\n*agentname: your requirement*\n\nExample:\n_ravi: 2BHK in Kondapur under 50 lakhs_`
-      })
-      return new Response('OK', { status: 200 })
+      return sendWhatsApp(from,
+        `Hi! We could not find which agent you are looking for.\n\nPlease use the WhatsApp link shared by your agent directly — it will connect you automatically. 🏠`
+      )
     }
 
-    // get agent
+    // get agent details
     const { data: agent } = await supabase
       .from('agents')
       .select('id, name')
@@ -50,36 +79,45 @@ export async function POST(req) {
       .single()
 
     if (!agent) {
-      await twilioClient.messages.create({
-        from: 'whatsapp:' + process.env.TWILIO_WHATSAPP_NUMBER,
-        to: from,
-        body: `Sorry, no agent found with username "${agentSlug}". Please check and try again.`
-      })
-      return new Response('OK', { status: 200 })
+      return sendWhatsApp(from,
+        `Sorry, no agent found. Please use the link shared by your agent directly.`
+      )
     }
 
-    // get properties
+    // get agent properties
     const { data: properties } = await supabase
       .from('properties')
       .select('title, area, bhk, price_lakhs, status, description')
       .eq('agent_id', agent.id)
 
-    const propertyContext = properties?.map((p, i) =>
-      `Property ${i + 1}: ${p.title} | ${p.bhk} BHK | ${p.area} | ₹${p.price_lakhs} Lakhs | ${p.status}`
-    ).join('\n') || 'No properties listed yet'
+    if (!properties || properties.length === 0) {
+      return sendWhatsApp(from,
+        `${agent.name} has not added any properties yet. Please check back soon!`
+      )
+    }
 
-    // ask Groq
+    const propertyContext = properties.map((p, i) =>
+      `Property ${i + 1}: ${p.title} | ${p.bhk} BHK | ${p.area} | ₹${p.price_lakhs} Lakhs | ${p.status} | ${p.description || ''}`
+    ).join('\n')
+
+    // ask Groq for matching properties
     const completion = await groq.chat.completions.create({
-      model: 'llama-3.1-8b-instant',
+      model: 'llama3-8b-8192',
       messages: [
         {
           role: 'system',
-          content: `You are a WhatsApp property assistant for ${agent.name}.
-Find matching properties and reply in a friendly WhatsApp style.
-Keep it concise. Use emojis naturally.
-End with the portfolio link note.
+          content: `You are a WhatsApp property assistant for ${agent.name}, a real estate agent.
+A client has messaged asking about properties.
+Find the best matches from the listings below and reply naturally.
+Rules:
+- Do NOT greet with "Hello" or mention the agent name at the start
+- Get straight to the point — show matching properties
+- Use simple WhatsApp style — short sentences, emojis are fine
+- Mention max 3 properties
+- Keep total reply under 200 words
+- End with: "Reply with any questions and I will help further!"
 
-PROPERTIES:
+PROPERTY LISTINGS:
 ${propertyContext}`
         },
         {
@@ -91,22 +129,23 @@ ${propertyContext}`
       temperature: 0.7,
     })
 
-    const reply = completion.choices[0]?.message?.content || 'Let me find properties for you!'
+    const aiReply = completion.choices[0]?.message?.content
+      || 'Let me find the best properties for you!'
 
     const portfolioLink = `${process.env.NEXT_PUBLIC_APP_URL}/agent/${agentSlug}`
     const chatLink = `${process.env.NEXT_PUBLIC_APP_URL}/chat/${agentSlug}`
 
-    await twilioClient.messages.create({
-      from: 'whatsapp:' + process.env.TWILIO_WHATSAPP_NUMBER,
-      to: from,
-      body: `${reply}\n\n📋 Full listings: ${portfolioLink}\n🤖 Chat with AI: ${chatLink}`
-    })
-
-    return new Response('OK', { status: 200 })
+    return sendWhatsApp(from,
+      `${aiReply}\n\n📋 See all listings: ${portfolioLink}\n🤖 Chat with AI: ${chatLink}`
+    )
 
   } catch (err) {
     console.error('WhatsApp route error:', err)
-    return new Response('OK', { status: 200 })
+    // even on error — return empty TwiML not "OK"
+    return new Response(
+      '<?xml version="1.0" encoding="UTF-8"?><Response></Response>',
+      { headers: { 'Content-Type': 'text/xml' } }
+    )
   }
 }
 
