@@ -31,11 +31,21 @@ export default function RegisterPage() {
       return
     }
 
-    const { error } = await supabase.from('agents').insert([form])
+    const { data: newAgent, error } = await supabase
+      .from('agents')
+      .insert([form])
+      .select()
+      .single()
 
     if (error) {
       setStatus('❌ Error: ' + error.message)
     } else {
+      // save phone → agent mapping for voice bot
+      await supabase.from('agent_phone_map').insert([{
+        agent_phone: form.phone,
+        agent_id: newAgent.id
+      }])
+
       localStorage.setItem('kinetos_agent_name', form.name)
       localStorage.setItem('kinetos_agent_slug', form.slug)
       setStatus('✅ Registered! Your link is: /agent/' + form.slug)
