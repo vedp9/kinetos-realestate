@@ -134,14 +134,14 @@ ${propertyContext}`
 
       // WhatsApp to client
       await twilioClient.messages.create({
-        from: 'whatsapp:' + process.env.TWILIO_PHONE_NUMBER,
+        from: 'whatsapp:' + process.env.TWILIO_WHATSAPP_NUMBER,
         to: 'whatsapp:' + callerPhone,
         body: `Hi! I am ${agent.name}'s property assistant.\n\nBased on your requirement, here are the matching properties:\n\n📋 View all listings: ${portfolioLink}\n\n🤖 Ask me more questions: ${chatLink}\n\n${agent.name} will call you back shortly.`
       })
 
       // WhatsApp summary to agent
       await twilioClient.messages.create({
-        from: 'whatsapp:' + process.env.TWILIO_PHONE_NUMBER,
+        from: 'whatsapp:' + process.env.TWILIO_WHATSAPP_NUMBER,
         to: 'whatsapp:+91' + agent.phone,
         body: `🔔 New missed call handled!\n\nCaller: ${callerPhone}\nThey said: "${speechResult}"\n\nAI replied: ${aiReply}\n\nCall them back when free!`
       })

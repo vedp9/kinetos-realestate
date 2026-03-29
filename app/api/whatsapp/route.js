@@ -35,7 +35,7 @@ export async function POST(req) {
     if (!agentSlug) {
       // ask them to specify agent
       await twilioClient.messages.create({
-        from: 'whatsapp:' + process.env.TWILIO_PHONE_NUMBER,
+        from: 'whatsapp:' + process.env.TWILIO_WHATSAPP_NUMBER,
         to: from,
         body: `Hi! To find properties, message us like this:\n\n*agentname: your requirement*\n\nExample:\n_ravi: 2BHK in Kondapur under 50 lakhs_`
       })
@@ -51,7 +51,7 @@ export async function POST(req) {
 
     if (!agent) {
       await twilioClient.messages.create({
-        from: 'whatsapp:' + process.env.TWILIO_PHONE_NUMBER,
+        from: 'whatsapp:' + process.env.TWILIO_WHATSAPP_NUMBER,
         to: from,
         body: `Sorry, no agent found with username "${agentSlug}". Please check and try again.`
       })
@@ -97,7 +97,7 @@ ${propertyContext}`
     const chatLink = `${process.env.NEXT_PUBLIC_APP_URL}/chat/${agentSlug}`
 
     await twilioClient.messages.create({
-      from: 'whatsapp:' + process.env.TWILIO_PHONE_NUMBER,
+      from: 'whatsapp:' + process.env.TWILIO_WHATSAPP_NUMBER,
       to: from,
       body: `${reply}\n\n📋 Full listings: ${portfolioLink}\n🤖 Chat with AI: ${chatLink}`
     })
