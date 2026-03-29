@@ -164,3 +164,9 @@ ${propertyContext}`
     })
   }
 }
+// allows browser GET test to confirm route is live
+export async function GET() {
+  return new Response('✅ Kinetos Voice Bot is live and ready.', {
+    headers: { 'Content-Type': 'text/plain' }
+  })
+}
