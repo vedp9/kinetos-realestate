@@ -472,12 +472,11 @@ export default function Home() {
               Kinetos — <em>Mee Property Assistant</em>
             </div>
             <div className="nav-right">
-              {/* Language toggle */}
               <button className="lang-btn" onClick={toggleLang}>
                 <span className="lang-icon">🌐</span>
                 {t.toggle_btn}
               </button>
-              <a href="/dashboard" className="nav-btn">{t.nav_dashboard}</a>
+              <a href="/login" className="nav-btn">Login →</a>
             </div>
           </nav>
 

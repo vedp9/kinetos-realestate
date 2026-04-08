@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { supabase } from '../../lib/supabase'
+import { getSession, clearSession } from '../../lib/auth'
 
 const STATUS_OPTIONS = ['Ready to move', 'Under construction', 'Resale']
 const BHK_OPTIONS = [1, 2, 3, 4, 5]
@@ -22,7 +23,15 @@ export default function UploadPage() {
   const [uploading, setUploading] = useState(false)
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState(null)
-
+  useEffect(() => {
+    const session = getSession()
+    if (!session) {
+      window.location.href = '/login'
+      return
+    }
+    // auto-fill username from session
+    setForm(f => ({ ...f, agent_slug: session.slug }))
+  }, [])
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value })
   }
@@ -411,6 +420,19 @@ export default function UploadPage() {
               Phase 1
             </div>
           </div>
+
+          <button
+            onClick={() => { clearSession(); window.location.href = '/login' }}
+            style={{
+              background: 'none', border: '1px solid #1c2538',
+              borderRadius: '8px', padding: '6px 12px',
+              color: '#6b7fa0', fontSize: '11px',
+              fontFamily: 'JetBrains Mono, monospace',
+              cursor: 'pointer',
+            }}
+          >
+            Logout
+          </button>
 
           {/* Heading */}
           <h1 className="title">List a <em>property</em></h1>

@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { supabase } from '../../lib/supabase'
+import { getSession, clearSession } from '../../lib/auth'
 
 export default function Dashboard() {
   const [slug, setSlug] = useState('')
@@ -10,6 +11,15 @@ export default function Dashboard() {
   const [error, setError] = useState('')
   const [loggedIn, setLoggedIn] = useState(false)
   const [deleting, setDeleting] = useState(null)
+  useEffect(() => {
+    const session = getSession()
+    if (!session) {
+      window.location.href = '/login'
+      return
+    }
+    // auto-fill username from session
+    setForm(f => ({ ...f, agent_slug: session.slug }))
+  }, [])
 
   async function handleLogin(e) {
     e.preventDefault()
