@@ -576,6 +576,26 @@ export default function AgentPortfolio() {
                   <div className="prop-title">{p.title}</div>
                   <div className="prop-price">₹{p.price_lakhs}L</div>
                 </div>
+                {p.photos && p.photos.length > 0 && (
+                  <div style={{
+                    display: 'flex', gap: '8px',
+                    overflowX: 'auto', marginBottom: '12px',
+                    scrollbarWidth: 'none',
+                  }}>
+                    {p.photos.map((url, i) => (
+                      <img
+                        key={i}
+                        src={url}
+                        alt={`${p.title} photo ${i + 1}`}
+                        style={{
+                          width: '120px', height: '80px',
+                          objectFit: 'cover', borderRadius: '8px',
+                          flexShrink: 0, border: '1px solid #1c2538',
+                        }}
+                      />
+                    ))}
+                  </div>
+                )}
                 <div className="prop-area">📍 {p.area}</div>
                 <div className="prop-tags">
                   <span className="tag tag-bhk">{p.bhk} BHK</span>
@@ -584,6 +604,9 @@ export default function AgentPortfolio() {
                     p.status === 'Under construction' ? 'tag-status-under' :
                     'tag-status-resale'
                   }`}>{p.status}</span>
+                  {p.cents && (
+                    <span className="tag tag-bhk">{p.cents} cents</span>
+                  )}
                 </div>
                 {p.description && (
                   <div className="prop-desc">{p.description}</div>
