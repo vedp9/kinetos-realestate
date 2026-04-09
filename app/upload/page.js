@@ -9,7 +9,6 @@ const MAX_PHOTOS = 5
 
 export default function UploadPage() {
   const [form, setForm] = useState({
-    agent_slug: '',
     title: '',
     area: '',
     bhk: '',
@@ -18,6 +17,8 @@ export default function UploadPage() {
     status: '',
     description: '',
   })
+  // agent slug comes from session — not from form
+  const [agentSlug, setAgentSlug] = useState('')
   const [photos, setPhotos] = useState([])         // File objects
   const [previews, setPreviews] = useState([])      // preview URLs
   const [uploading, setUploading] = useState(false)
@@ -29,8 +30,8 @@ export default function UploadPage() {
       window.location.href = '/login'
       return
     }
-    // auto-fill username from session
-    setForm(f => ({ ...f, agent_slug: session.slug }))
+    // silently store slug — no form field needed
+    setAgentSlug(session.slug)
   }, [])
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value })
@@ -102,7 +103,7 @@ export default function UploadPage() {
     const { data: agent, error: agentErr } = await supabase
       .from('agents')
       .select('id')
-      .eq('slug', form.agent_slug.toLowerCase().trim())
+      .eq('slug', agentSlug)
       .single()
 
     if (agentErr || !agent) {
@@ -112,7 +113,7 @@ export default function UploadPage() {
     }
 
     // upload photos first (if any)
-    const photoUrls = await uploadPhotos(form.agent_slug, form.title)
+    const photoUrls = await uploadPhotos(agentSlug, form.title)
 
     // insert property
     const { error } = await supabase.from('properties').insert([{
@@ -132,7 +133,7 @@ export default function UploadPage() {
     } else {
       setResult({
         type: 'success',
-        msg: `✅ Property listed successfully!${photoUrls.length > 0 ? ` ${photoUrls.length} photo(s) uploaded.` : ''} View at /agent/${form.agent_slug}`
+        msg: `✅ Property listed successfully!${photoUrls.length > 0 ? ` ${photoUrls.length} photo(s) uploaded.` : ''} View at /agent/${agentSlug}`
       })
       // reset form fields except agent_slug
       setForm(f => ({
@@ -442,20 +443,6 @@ export default function UploadPage() {
 
           <form onSubmit={handleSubmit}>
 
-            {/* Card 1 — Agent */}
-            <div className="card">
-              <div className="card-title">Your Username</div>
-              <input
-                className="input"
-                name="agent_slug"
-                placeholder="e.g. ravi"
-                value={form.agent_slug}
-                onChange={handleChange}
-                required
-                autoCapitalize="none"
-                autoCorrect="off"
-              />
-            </div>
 
             {/* Card 2 — Property basics */}
             <div className="card">
@@ -656,14 +643,10 @@ export default function UploadPage() {
             <button
               type="button"
               onClick={() => {
-                if (!form.agent_slug.trim()) {
-                  alert('Please enter your username first.')
-                  return
-                }
                 const go = window.confirm(
                   'What would you like to do?\n\nOK → Go to your Portfolio\nCancel → Stay and add more properties'
                 )
-                if (go) window.open(`/agent/${form.agent_slug}`, '_blank')
+                if (go) window.open(`/agent/${agentSlug}`, '_blank')
               }}
             >
               Visit your portfolio →
