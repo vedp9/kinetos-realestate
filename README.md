@@ -5,11 +5,6 @@ A modern real-estate web application that helps users explore property listings,
 🔗 **Live Demo:** [View the application](https://kinetos-realestate.vercel.app/)  
 💻 **Repository:** [GitHub](https://github.com/vedp9/kinetos-realestate)
 
-## Preview
-
-<!-- Add a screenshot to your repository, then replace the path below -->
-![Kinetos Real Estate preview](./public/preview.png)
-
 ## Features
 
 - Browse real-estate property listings
