@@ -1,36 +1,93 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Kinetos Real Estate
+
+A modern real-estate web application that helps users explore property listings, view property details, and discover homes through a clean, responsive interface.
+
+🔗 **Live Demo:** [View the application](https://kinetos-realestate.vercel.app/)  
+💻 **Repository:** [GitHub](https://github.com/vedp9/kinetos-realestate)
+
+## Preview
+
+<!-- Add a screenshot to your repository, then replace the path below -->
+![Kinetos Real Estate preview](./public/preview.png)
+
+## Features
+
+- Browse real-estate property listings
+- View property details including price, location, images, and amenities
+- Responsive interface for mobile, tablet, and desktop
+- Modern and intuitive property-search experience
+- Fast performance with Next.js
+
+## Tech Stack
+
+- **Frontend:** Next.js, React
+- **Styling:** CSS / Tailwind CSS
+- **Deployment:** Vercel
+- **Version Control:** Git and GitHub
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+Make sure you have the following installed:
+
+- Node.js 18 or later
+- npm, pnpm, yarn, or bun
+
+### Installation
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/vedp9/kinetos-realestate.git
+```
+
+2. Move into the project folder:
+
+```bash
+cd kinetos-realestate
+```
+
+3. Install dependencies:
+
+```bash
+npm install
+```
+
+4. Start the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+5. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```text
+kinetos-realestate/
+├── app/              # Application routes and pages
+├── components/       # Reusable UI components
+├── public/           # Static assets and images
+├── README.md
+└── package.json
+```
 
-## Learn More
+## Future Improvements
 
-To learn more about Next.js, take a look at the following resources:
+- Add advanced filtering by location, budget, and property type
+- Integrate a database for real-time property listings
+- Add user authentication and saved properties
+- Enable agent or owner property submissions
+- Add an interactive map for property locations
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Author
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+**Veda Praneeth**
 
-## Deploy on Vercel
+- GitHub: [@vedp9](https://github.com/vedp9)
+- LinkedIn: [@vedapraneeth](https://linkedin.com/vedapraneeth)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## License
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This project is for portfolio and learning purposes.
